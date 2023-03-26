@@ -1,9 +1,9 @@
-package com.scheduler.agent;
+package com.nikhil.scheduler.agent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.scheduler.repo.AgentRepo;
+import com.nikhil.scheduler.repo.AgentRepo;
 
 @Component(value="springMyAgent")
 public class SpringMyAgent implements SpringAgent {

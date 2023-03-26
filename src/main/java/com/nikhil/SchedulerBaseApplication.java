@@ -1,4 +1,4 @@
-package com.scheduler;
+package com.nikhil;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,16 +18,17 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.util.MethodInvoker;
 
-import com.scheduler.agent.CommonAgent;
-import com.scheduler.launcher.CommonLauncher;
-import com.scheduler.launcher.Launcher;
-import com.scheduler.repo.AgentRepo;
-import com.scheduler.util.LauncerToAgentMapping;
+import com.nikhil.datasource.config.DataSourceConfig;
+import com.nikhil.datasource.routing.ThreadLocalStorage;
+import com.nikhil.scheduler.repo.AgentRepo;
+import com.nikhil.scheduler.util.LauncerToAgentMapping;
 
 @SpringBootApplication
+@Import(DataSourceConfig.class)
 public class SchedulerBaseApplication implements CommandLineRunner {
 
 	@Autowired
@@ -44,6 +45,7 @@ public class SchedulerBaseApplication implements CommandLineRunner {
 	}
 
 	public void run(String... args) {
+		ThreadLocalStorage.setTenantName("scheduledb".toUpperCase());
 		var list = agentRepo.findAll();
 		System.out.println("Agents to runs is  " + list.size());
 		list.forEach(agent -> {
@@ -59,24 +61,20 @@ public class SchedulerBaseApplication implements CommandLineRunner {
 				invoker.setTargetMethod(agent.getLauncerMethod());
 				invoker.prepare();
 
-				ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDateTime.now(),
-						ZoneId.of("Asia/Kolkata"));
+				ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Kolkata"));
 
 				JobDataMap dataMap = new JobDataMap();
-				dataMap.put("Demo", "Demo For Agent");
 				dataMap.put("methodInvoker", invoker);
 
 				JobDetail detail = JobBuilder.newJob(MethodInvokingJobDetailFactoryBean.StatefulMethodInvokingJob.class)
-						.withIdentity("JOB_" + agent.getAgentNumber(),
-								"JOB_GRP_" + agent.getAgentNumber())
-						.usingJobData(dataMap).storeDurably().requestRecovery()
-						.build();
+						.withIdentity("JOB_" + agent.getAgentNumber(), "JOB_GRP_" + agent.getAgentNumber())
+						.usingJobData(dataMap).storeDurably().requestRecovery().build();
 
-				Trigger trigger = TriggerBuilder.newTrigger().withIdentity("TRIGGER_" + agent.getAgentNumber(),
-						"TRIGGER_GRP_" + agent.getAgentNumber())
+				Trigger trigger = TriggerBuilder.newTrigger()
+						.withIdentity("TRIGGER_" + agent.getAgentNumber(), "TRIGGER_GRP_" + agent.getAgentNumber())
 						.startAt(Date.from(zonedDateTime.toInstant()))
-						.withSchedule(CronScheduleBuilder.cronSchedule(agent.getCronExpression()))
-						.build();
+						.withSchedule(CronScheduleBuilder.cronSchedule(agent.getCronExpression())).build();
+				
 				scheduler.scheduleJob(detail, trigger);
 			} catch (ClassNotFoundException | NoSuchMethodException | SchedulerException e) {
 				e.printStackTrace();

@@ -1,15 +1,15 @@
-package com.scheduler.util;
+package com.nikhil.scheduler.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.scheduler.agent.AgentType;
-import com.scheduler.agent.CommonAgent;
-import com.scheduler.agent.SpringAgent;
-import com.scheduler.launcher.CommonLauncher;
-import com.scheduler.launcher.Launcher;
-import com.scheduler.launcher.SpringLauncher;
+import com.nikhil.scheduler.agent.AgentType;
+import com.nikhil.scheduler.agent.CommonAgent;
+import com.nikhil.scheduler.agent.SpringAgent;
+import com.nikhil.scheduler.launcher.CommonLauncher;
+import com.nikhil.scheduler.launcher.Launcher;
+import com.nikhil.scheduler.launcher.SpringLauncher;
 
 @Component
 public class LauncerToAgentMapping {

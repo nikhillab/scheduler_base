@@ -1,4 +1,4 @@
-package com.scheduler.agent;
+package com.nikhil.scheduler.agent;
 
 import org.springframework.stereotype.Component;
 

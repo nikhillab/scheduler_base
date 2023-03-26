@@ -1,4 +1,4 @@
-package com.scheduler.scheduler_base;
+package com.nikhil;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

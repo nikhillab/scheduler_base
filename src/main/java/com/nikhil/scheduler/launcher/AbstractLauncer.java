@@ -1,6 +1,6 @@
-package com.scheduler.launcher;
+package com.nikhil.scheduler.launcher;
 
-import com.scheduler.agent.AgentType;
+import com.nikhil.scheduler.agent.AgentType;
 
 public abstract class AbstractLauncer<T  extends AgentType> implements Launcher<T> {
     protected T agent;
